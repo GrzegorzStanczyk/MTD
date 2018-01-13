@@ -7,13 +7,15 @@ import { GeolocationService } from './shared/geolocation.service';
 import { AppComponent } from './app.component';
 import { AngleComponent } from './angle/angle.component';
 import { SpeedComponent } from './speed/speed.component';
+import { TelemetryComponent } from './telemetry/telemetry.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     AngleComponent,
-    SpeedComponent
+    SpeedComponent,
+    TelemetryComponent
   ],
   imports: [
     BrowserModule
