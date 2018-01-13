@@ -1,7 +1,24 @@
 :host {
   position: absolute;
+  box-sizing: border-box;
+  left: 0;
+  top: 0;
+  width: 150px;
+  height: 100px;
+  padding-left: 5px;
+  transform: translatey(-100%);
+  background-color: #000;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
-p {
-  top: 0;
+.speed__quantity {
+  font-size: 3.5rem;
+}
+
+.speed__unit {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
 }
