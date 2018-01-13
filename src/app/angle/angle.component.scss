@@ -1,40 +1,33 @@
 $telemetry-size: 300px;
+:host {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #000;
+}
 .center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-:host {
-  // position: relative;
-  height: 100%;
-  @extend .center;
-}
-
-.telemetry {
-  @extend .center;
-  width: $telemetry-size;
-  height: $telemetry-size;
-  min-width: $telemetry-size;
-  min-height: $telemetry-size;
-  border-radius: 50%;
-  background-color: black;
-  z-index: 10;
-}
-
 .lean-angle__quantity {
-  @extend .center;
-  width: calc(#{$telemetry-size} - 20%);
-  height: calc(#{$telemetry-size} - 20%);
-  border-radius: 50%;
-  background-color: brown;
-  z-index: -10;
-}
-
+    @extend .center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateY(-100%);
+    width: 150px;
+    height: 100px;
+    background-color: #000;
+    z-index: 10;
+  }
+  
 .quantity {
   position: relative;
-  font-size: 6rem;
-  color: lightgrey;
+  font-size: 5rem;
+  color: #fff;
   &::after {
       position: absolute;
       top: 0;
@@ -42,3 +35,41 @@ $telemetry-size: 300px;
       font-size: 2.5rem;
   }
 }
+
+// :host {
+//   // position: relative;
+//   height: 90%;
+//   @extend .center;
+// }
+
+// .telemetry {
+//   @extend .center;
+//   width: $telemetry-size;
+//   height: $telemetry-size;
+//   min-width: $telemetry-size;
+//   min-height: $telemetry-size;
+//   border-radius: 50%;
+//   background-color: black;
+//   z-index: 10;
+// }
+
+// .lean-angle__quantity {
+//   @extend .center;
+//   width: calc(#{$telemetry-size} - 20%);
+//   height: calc(#{$telemetry-size} - 20%);
+//   border-radius: 50%;
+//   background-color: brown;
+//   z-index: -10;
+// }
+
+// .quantity {
+//   position: relative;
+//   font-size: 6rem;
+//   color: lightgrey;
+//   &::after {
+//       position: absolute;
+//       top: 0;
+//       content: "\00b0";
+//       font-size: 2.5rem;
+//   }
+// }
