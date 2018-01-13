@@ -7,11 +7,16 @@ import { Subject } from 'rxjs/Subject';
 export class EventListenerService {
   private angleSubject: Subject<number> = new Subject<number>();
   public angle$: Observable<number> = this.angleSubject.asObservable();
+  private accelerationSubject: Subject<any> = new Subject<any>();
+  public acceleration$: Observable<any> = this.accelerationSubject.asObservable();
 
   constructor(private eventManager: EventManager) {
     this.eventManager.addGlobalEventListener('window', 'deviceorientation', (event) => {
       this.angleSubject.next(event.gamma);
     });
-  }
 
+    this.eventManager.addGlobalEventListener('window', 'devicemotion', (event) => {
+      this.accelerationSubject.next(event.acceleration);
+    });
+  }
 }
