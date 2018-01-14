@@ -4,8 +4,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class GeolocationService implements OnDestroy {
-  private speedSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  public speed$: Observable<number> = this.speedSubject.asObservable();
+  private speedSubject: BehaviorSubject<any> = new BehaviorSubject<any>(0);
+  public speed$: Observable<any> = this.speedSubject.asObservable();
   private watcher;
 
   constructor() {
@@ -19,7 +19,15 @@ export class GeolocationService implements OnDestroy {
 
   getSpeed() {
     this.watcher = navigator.geolocation.watchPosition(event => {
-      this.speedSubject.next(event.coords.latitude);
+      if (event.coords.speed !== null) {
+        this.speedSubject.next(event.coords.speed);
+      }
+    }, err => {
+      console.log(err);
+    }, {
+      enableHighAccuracy: true,
+      maximumAge: 30000,
+      timeout: 20000
     });
   }
 

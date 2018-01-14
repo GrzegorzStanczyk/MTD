@@ -8,11 +8,13 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./speed.component.scss']
 })
 export class SpeedComponent implements OnInit {
-  public speed$: Observable<number>;
+  public speed$: Observable<any>;
+  private velocityUnits: number = 3.6;
 
   constructor(private geolocationService: GeolocationService) {}
 
   ngOnInit() {
-    this.speed$ = this.geolocationService.speed$;
+    // this.speed$ = this.geolocationService.speed$.map(v => Math.round(v));
+    this.speed$ = this.geolocationService.speed$.map(v =>  Math.round(v * this.velocityUnits));
   }
 }
