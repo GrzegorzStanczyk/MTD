@@ -19,14 +19,14 @@ import 'rxjs/add/operator/map';
 export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('telemetryCanvas') telemetryCanvas;
   @ViewChild('accelerationCanvas') accelerationCanvas;
-  // public angle$: Observable<number>;
-  public angle: number;
-  public acceleration$: Observable<any>;
-
+  public angle: number = 0;
+  private gForce: {x: number, y: number} = {
+    x: 0,
+    y: 0
+  };
+  // public acceleration$: Observable<any>;
   private telemetry: HTMLCanvasElement;
   private acceleration: HTMLCanvasElement;
-  // private canvas: HTMLCanvasElement = this.telemetryCanvas.nativeElement;
-  // private telemetryCTX: CanvasRenderingContext2D = this.telemetry.getContext('2d');
   private telemetryCTX: CanvasRenderingContext2D;
   private accelerationCTX: CanvasRenderingContext2D;
   private hostSize: {width: number, height: number};
@@ -34,8 +34,12 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   private radius: number;
   private grd: CanvasGradient;
   private startingPoint: number = -Math.PI / 2;
+  private gForceDotSize: number = 15;
   private lineWidth: number = 50;
   private animationFrame: AnimationKeyframe;
+  private maxGForce: number = 1.5;
+  private gForceScale: number = 3;
+  private gForceScaleSize: number;
 
   constructor(
     private eventListenerService: EventListenerService,
@@ -46,11 +50,16 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.setCanvasSize();
-    this.drawGForce();
+    this.drawGForceBoard();
     this.setGradient();
     // this.angle$ = this.eventListenerService.angle$.map(val => Math.round(val));
     this.eventListenerService.angle$.subscribe(val => this.angle = Math.round(val));
-    this.acceleration$ = this.eventListenerService.acceleration$.map(val => Math.round(val.x));
+    this.eventListenerService.acceleration$.subscribe(val => {
+      this.gForce = {
+        x: val.x / 9.8,
+        y: val.y / 9.8
+      };
+    });
     this.ngZone.runOutsideAngular(() => this.loop());
   }
 
@@ -71,6 +80,7 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
       x: this.hostSize.width / 2,
       y: this.hostSize.height / 2
     };
+    this.gForceScaleSize  = this.leanAngleSize.x / this.gForceScale;
     this.radius = this.hostSize.width / 2 - this.lineWidth / 2;
   }
 
@@ -102,7 +112,7 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.telemetryCTX.stroke();
   }
 
-  drawGForce() {
+  drawGForceBoard() {
     this.accelerationCTX.beginPath();
     this.accelerationCTX.moveTo(this.lineWidth, this.acceleration.height / 2);
     this.accelerationCTX.lineTo(this.acceleration.width - this.lineWidth, this.acceleration.height / 2);
@@ -114,13 +124,23 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accelerationCTX.stroke();
 
     this.accelerationCTX.beginPath();
-    this.accelerationCTX.arc(this.acceleration.width / 2, this.acceleration.height / 2, ((this.acceleration.width / 2) -  this.lineWidth) * 1 / 3,
+    this.accelerationCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, (this.leanAngleSize.x - this.lineWidth) * 1 / 3,
       0, Math.PI * 2, true);
-    this.accelerationCTX.arc(this.acceleration.width / 2, this.acceleration.height / 2, ((this.acceleration.width / 2) -  this.lineWidth) * 2 / 3,
+    this.accelerationCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, (this.leanAngleSize.x - this.lineWidth) * 2 / 3,
       0, Math.PI * 2, true);
-    this.accelerationCTX.arc(this.acceleration.width / 2, this.acceleration.height / 2, (this.acceleration.width / 2) -  this.lineWidth,
+    this.accelerationCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, (this.leanAngleSize.x) - this.lineWidth,
       0, Math.PI * 2, true);
     this.accelerationCTX.stroke();
+  }
+
+  drawGForce(): void {
+    this.telemetryCTX.beginPath();
+    if (this.gForce.x > this.maxGForce || this.gForce.y > this.maxGForce) {
+      return;
+    }
+    this.telemetryCTX.arc(this.leanAngleSize.x + (this.gForce.x * this.gForceScaleSize),
+      this.leanAngleSize.y + (this.gForce.y * this.gForceScaleSize), this.gForceDotSize, 0, Math.PI * 2, false);
+    this.telemetryCTX.fill();
   }
 
   clearCanvas(): void {
@@ -130,6 +150,7 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   loop(): void {
     this.clearCanvas();
     this.drawLeanAngle();
+    this.drawGForce();
     this.animationFrame = requestAnimationFrame(() => this.loop());
   }
 
