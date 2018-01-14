@@ -12,6 +12,12 @@ $telemetry-size: 300px;
   align-items: center;
 }
 
+.g-force {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .lean-angle__quantity {
     @extend .center;
     position: absolute;
@@ -36,8 +42,21 @@ $telemetry-size: 300px;
   }
 }
 
-.g-force {
+.max-angle {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  font-size: 2rem;
+  &::after {
+    position: absolute;
+    top: 0;
+    content: "\00b0";
+  }
+}
+
+.max-angle--left {
+  left: 10px;
+}
+
+.max-angle--right {
+  right: 20px;
 }

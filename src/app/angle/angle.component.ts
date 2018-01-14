@@ -20,8 +20,8 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('telemetryCanvas') telemetryCanvas;
   @ViewChild('accelerationCanvas') accelerationCanvas;
   public angle: number = 0;
-  private maxLeftAngle: number = 0;
-  private maxRightAngle: number = 0;
+  public maxLeftAngle: number = 0;
+  public maxRightAngle: number = 0;
   private maxAngleLineSize: number = 2;
   private gForce: {x: number, y: number} = {
     x: 0,
@@ -135,12 +135,6 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.telemetryCTX.stroke();
   }
 
-  writeMaxLeanAngle(): void {
-    this.telemetryCTX.font = '30px Arial';
-    this.telemetryCTX.fillText(this.maxLeftAngle.toString(), this.hostSize.width * 0.25, 50);
-    this.telemetryCTX.fillText(this.maxRightAngle.toString(), this.hostSize.width * 0.75, 50);
-  }
-
   drawGForceBoard(): void {
     this.accelerationCTX.beginPath();
     this.accelerationCTX.moveTo(this.lineWidth, this.acceleration.height / 2);
@@ -180,7 +174,6 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clearCanvas();
     this.drawLeanAngle();
     this.drawMaxLeanAngle();
-    this.writeMaxLeanAngle();
     this.drawGForce();
     this.animationFrame = requestAnimationFrame(() => this.loop());
   }
