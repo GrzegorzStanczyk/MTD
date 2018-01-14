@@ -20,6 +20,9 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('telemetryCanvas') telemetryCanvas;
   @ViewChild('accelerationCanvas') accelerationCanvas;
   public angle: number = 0;
+  private maxLeftAngle: number = 0;
+  private maxRightAngle: number = 0;
+  private maxAngleLineSize: number = 2;
   private gForce: {x: number, y: number} = {
     x: 0,
     y: 0
@@ -95,24 +98,44 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.telemetryCTX.strokeStyle = this.grd;
   }
 
-  degreesToRadians (degrees): number {
+  degreesToRadians(degrees): number {
     return degrees * (Math.PI / 180);
   }
 
   drawLeanAngle(): void {
     this.telemetryCTX.beginPath();
     if (this.angle > 0) {
+      if (this.angle > this.maxRightAngle) {
+        this.maxRightAngle = this.angle;
+      }
       this.telemetryCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, this.radius,
         this.startingPoint, this.degreesToRadians(this.angle) + this.startingPoint, false);
     } else {
+      if (this.angle < this.maxLeftAngle) {
+        this.maxLeftAngle = this.angle;
+      }
       this.telemetryCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, this.radius,
-        this.startingPoint, this.degreesToRadians(this.angle) - Math.PI / 2, true);
+        this.startingPoint, this.degreesToRadians(this.angle) + this.startingPoint, true);
     }
     this.telemetryCTX.lineWidth = this.lineWidth;
     this.telemetryCTX.stroke();
   }
 
-  drawGForceBoard() {
+  drawMaxLeanAngle(): void {
+    this.telemetryCTX.beginPath();
+    this.telemetryCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, this.radius,
+      this.degreesToRadians(this.maxRightAngle) + this.startingPoint,
+      this.degreesToRadians(this.maxRightAngle + this.maxAngleLineSize) + this.startingPoint, false);
+    this.telemetryCTX.stroke();
+
+    this.telemetryCTX.beginPath();
+    this.telemetryCTX.arc(this.leanAngleSize.x, this.leanAngleSize.y, this.radius,
+      this.degreesToRadians(this.maxLeftAngle) + this.startingPoint,
+      this.degreesToRadians(this.maxLeftAngle + this.maxAngleLineSize) + this.startingPoint, false);
+    this.telemetryCTX.stroke();
+  }
+
+  drawGForceBoard(): void {
     this.accelerationCTX.beginPath();
     this.accelerationCTX.moveTo(this.lineWidth, this.acceleration.height / 2);
     this.accelerationCTX.lineTo(this.acceleration.width - this.lineWidth, this.acceleration.height / 2);
@@ -150,6 +173,7 @@ export class AngleComponent implements OnInit, AfterViewInit, OnDestroy {
   loop(): void {
     this.clearCanvas();
     this.drawLeanAngle();
+    this.drawMaxLeanAngle();
     this.drawGForce();
     this.animationFrame = requestAnimationFrame(() => this.loop());
   }
